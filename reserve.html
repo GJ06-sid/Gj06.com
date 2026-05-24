@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
+  <meta name="description" content="Reserve a table or place an order at GJ 06 — A Magical 2D Cafe & Bakehouse." />
+  <title>Reserve & Order — GJ 06</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/animations.css" />
+  <style>
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .form-label {
+      font-family: var(--font-hand);
+      font-size: 17px;
+      font-weight: 700;
+    }
+    .form-input {
+      font-family: var(--font-body);
+      font-size: 16px;
+      padding: 14px 16px;
+      border: 3px solid var(--black);
+      border-radius: var(--radius-sketch);
+      background: white;
+      width: 100%;
+      appearance: none;
+      outline: none;
+      transition: box-shadow 0.2s;
+      min-height: 52px;
+    }
+    .form-input:focus {
+      box-shadow: 4px 4px 0 var(--black);
+    }
+    .form-input::placeholder { opacity: 0.4; }
+    select.form-input { cursor: pointer; }
+    textarea.form-input { resize: vertical; min-height: 100px; }
+
+    .toggle-tab {
+      flex: 1;
+      font-family: var(--font-display);
+      font-size: 20px;
+      letter-spacing: 0.05em;
+      padding: 16px;
+      border: 3px solid var(--black);
+      background: white;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .toggle-tab.active {
+      background: var(--black);
+      color: white;
+    }
+    .toggle-tab:first-child {
+      border-radius: var(--radius-sketch) 0 0 var(--radius-sketch);
+      border-right: none;
+    }
+    .toggle-tab:last-child {
+      border-radius: 0 var(--radius-sketch) var(--radius-sketch) 0;
+    }
+
+    .form-section {
+      display: none;
+    }
+    .form-section.active {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .success-msg {
+      display: none;
+      text-align: center;
+      padding: 48px 24px;
+    }
+    .success-msg.show {
+      display: block;
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-transition"></div>
+
+<div class="cursor" aria-hidden="true">
+  <svg viewBox="0 0 36 36" fill="none">
+    <rect x="8" y="16" width="20" height="14" rx="2" fill="#0a0a0a"/>
+    <path d="M28 20 Q34 20 34 25 Q34 30 28 30" stroke="#0a0a0a" stroke-width="2.5" fill="none"/>
+    <path d="M14 14 Q13 10 14 7 Q15 4 14 1" stroke="#0a0a0a" stroke-width="2" fill="none" stroke-linecap="round" class="steam-line"/>
+    <path d="M20 14 Q19 10 20 7 Q21 4 20 1" stroke="#0a0a0a" stroke-width="2" fill="none" stroke-linecap="round" class="steam-line"/>
+    <ellipse cx="18" cy="30" rx="13" ry="3" fill="#0a0a0a"/>
+  </svg>
+</div>
+
+<!-- Nav Overlay -->
+<div id="navOverlay" class="nav-menu-overlay">
+  <button id="navClose" style="position:absolute;top:24px;right:24px;background:none;border:none;font-size:42px;color:white;font-family:'Caveat',cursive;">✕</button>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="menu.html">Menu</a>
+    <a href="index.html#about">Our Story</a>
+    <a href="index.html#gallery">Gallery</a>
+    <a href="reserve.html">Reserve</a>
+  </nav>
+</div>
+
+<!-- Navbar -->
+<header id="navbar" style="position:fixed;top:0;left:0;right:0;z-index:400;height:var(--nav-h);display:flex;align-items:center;justify-content:space-between;padding:0 20px;background:white;border-bottom:2.5px solid var(--black);transition:box-shadow 0.3s;">
+  <a href="index.html" style="display:flex;align-items:center;gap:10px;">
+    <img src="assets/logo.png" alt="GJ 06" style="height:42px;width:auto;" onerror="this.style.display='none'">
+    <span style="font-family:var(--font-display);font-size:26px;letter-spacing:0.05em;">GJ 06</span>
+  </a>
+  <button id="hamburger" aria-label="Open menu" aria-expanded="false" style="background:none;border:3px solid var(--black);border-radius:var(--radius-sketch);width:48px;height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px;">
+    <span style="display:block;width:22px;height:2.5px;background:var(--black);border-radius:2px;"></span>
+    <span style="display:block;width:16px;height:2.5px;background:var(--black);border-radius:2px;align-self:flex-start;"></span>
+    <span style="display:block;width:22px;height:2.5px;background:var(--black);border-radius:2px;"></span>
+  </button>
+</header>
+<style>#navbar.scrolled{box-shadow:0 4px 0 var(--black);}</style>
+
+<!-- Page Header -->
+<section style="padding-top:calc(var(--nav-h) + 48px);padding-bottom:40px;padding-left:20px;padding-right:20px;background:var(--black);text-align:center;position:relative;overflow:hidden;">
+  <div style="position:absolute;inset:0;background-image:radial-gradient(circle,#333 1px,transparent 1px);background-size:24px 24px;opacity:0.4;"></div>
+  <div style="position:relative;z-index:2;">
+    <div style="font-family:var(--font-hand);font-size:18px;color:white;opacity:0.5;margin-bottom:8px;">— grab a seat or place an order —</div>
+    <h1 class="display-xl" style="color:white;line-height:0.85;">RESERVE<br>&amp; ORDER</h1>
+  </div>
+</section>
+
+<div style="background:var(--black);line-height:0;">
+  <svg viewBox="0 0 1440 40" preserveAspectRatio="none" style="display:block;width:100%;">
+    <path d="M0,20 Q180,0 360,20 Q540,40 720,20 Q900,0 1080,20 Q1260,40 1440,20 L1440,40 L0,40 Z" fill="white"/>
+  </svg>
+</div>
+
+<!-- Main Form Area -->
+<main style="padding:40px 20px 120px;max-width:640px;margin:0 auto;">
+
+  <!-- Toggle: Reserve / Order -->
+  <div style="display:flex;margin-bottom:32px;" class="reveal">
+    <button class="toggle-tab active" id="tabReserve" onclick="switchTab('reserve')">🪑 RESERVE</button>
+    <button class="toggle-tab" id="tabOrder" onclick="switchTab('order')">📦 ORDER</button>
+  </div>
+
+  <!-- ===== RESERVATION FORM ===== -->
+  <div id="formReserve" class="form-section active reveal">
+
+    <div class="form-group">
+      <label class="form-label" for="rName">Your Name</label>
+      <input class="form-input" type="text" id="rName" placeholder="What do we call you?" autocomplete="name" required />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="rPhone">Phone Number</label>
+      <input class="form-input" type="tel" id="rPhone" placeholder="+91 00000 00000" autocomplete="tel" required />
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+      <div class="form-group">
+        <label class="form-label" for="rDate">Date</label>
+        <input class="form-input" type="date" id="rDate" required />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="rTime">Time</label>
+        <select class="form-input" id="rTime" required>
+          <option value="" disabled selected>Pick a time</option>
+          <option>7:00 AM</option>
+          <option>8:00 AM</option>
+          <option>9:00 AM</option>
+          <option>10:00 AM</option>
+          <option>11:00 AM</option>
+          <option>12:00 PM</option>
+          <option>1:00 PM</option>
+          <option>2:00 PM</option>
+          <option>3:00 PM</option>
+          <option>4:00 PM</option>
+          <option>5:00 PM</option>
+          <option>6:00 PM</option>
+          <option>7:00 PM</option>
+          <option>8:00 PM</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="rGuests">Number of Guests</label>
+      <select class="form-input" id="rGuests" required>
+        <option value="" disabled selected>How many?</option>
+        <option>1 — Solo & loving it</option>
+        <option>2 — A cozy duo</option>
+        <option>3 — A small gang</option>
+        <option>4 — Four flat friends</option>
+        <option>5</option>
+        <option>6</option>
+        <option>7</option>
+        <option>8+</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="rNotes">Any special requests? <span style="opacity:0.5;font-weight:400;">(optional)</span></label>
+      <textarea class="form-input" id="rNotes" placeholder="Allergies, occasion, window seat... we'll try our best ✦"></textarea>
+    </div>
+
+    <button onclick="submitReservation()" class="btn wiggle" style="font-size:22px;padding:18px;width:100%;justify-content:center;margin-top:8px;">
+      Confirm Reservation →
+    </button>
+
+    <p style="font-family:var(--font-hand);font-size:14px;text-align:center;opacity:0.5;margin-top:8px;">
+      We'll call you within 30 minutes to confirm.
+    </p>
+  </div>
+
+  <!-- ===== ORDER FORM ===== -->
+  <div id="formOrder" class="form-section reveal">
+
+    <div class="form-group">
+      <label class="form-label" for="oName">Your Name</label>
+      <input class="form-input" type="text" id="oName" placeholder="What do we call you?" autocomplete="name" required />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="oPhone">Phone Number</label>
+      <input class="form-input" type="tel" id="oPhone" placeholder="+91 00000 00000" autocomplete="tel" required />
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="oType">Order Type</label>
+      <select class="form-input" id="oType" required>
+        <option value="" disabled selected>Pickup or delivery?</option>
+        <option>Takeaway — I'll come pick it up</option>
+        <option>Delivery — Bring it to me</option>
+      </select>
+    </div>
+
+    <div class="form-group" id="addressGroup" style="display:none;">
+      <label class="form-label" for="oAddress">Delivery Address</label>
+      <textarea class="form-input" id="oAddress" placeholder="Your full address..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label" for="oTime">Preferred Time</label>
+      <select class="form-input" id="oTime" required>
+        <option value="" disabled selected>When do you want it?</option>
+        <option>ASAP — as fast as you can!</option>
+        <option>30 minutes</option>
+        <option>1 hour</option>
+        <option>Schedule for later...</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Your Order</label>
+      <div style="
+        border:3px solid var(--black);
+        border-radius:var(--radius-sketch);
+        padding:16px;
+        font-family:var(--font-hand);
+        font-size:16px;
+        min-height:80px;
+        background:var(--grey-light);
+      ">
+        <div style="opacity:0.5;margin-bottom:8px;">Add items from the menu, or write your order below:</div>
+        <textarea class="form-input" id="oItems" placeholder="e.g. 2x Classic Chai, 1x Butter Toast, 1x Chai Cookies..." style="background:white;margin-top:8px;"></textarea>
+      </div>
+    </div>
+
+    <div style="display:flex;gap:16px;align-items:center;padding:16px;border:3px solid var(--black);border-radius:var(--radius-sketch);">
+      <div style="font-size:32px;">🧾</div>
+      <div>
+        <div style="font-family:var(--font-hand);font-size:16px;font-weight:700;">Payment on delivery/pickup</div>
+        <div style="font-family:var(--font-body);font-size:13px;opacity:0.6;">We accept cash, UPI, and card. Online payment coming soon.</div>
+      </div>
+    </div>
+
+    <button onclick="submitOrder()" class="btn wiggle" style="font-size:22px;padding:18px;width:100%;justify-content:center;margin-top:8px;">
+      Place Order →
+    </button>
+
+    <p style="font-family:var(--font-hand);font-size:14px;text-align:center;opacity:0.5;margin-top:8px;">
+      We'll call you to confirm your order.
+    </p>
+  </div>
+
+  <!-- Success Message -->
+  <div class="success-msg" id="successMsg">
+    <div style="font-size:64px;margin-bottom:20px;">✦</div>
+    <h2 class="display-md" style="margin-bottom:12px;" id="successTitle">You're all set!</h2>
+    <p style="font-family:var(--font-hand);font-size:18px;opacity:0.7;line-height:1.6;" id="successText">
+      We've received your reservation.<br>Expect a call from us shortly!
+    </p>
+    <div style="margin-top:32px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+      <a href="index.html" class="btn">Back Home</a>
+      <a href="menu.html" class="btn btn-outline">See Menu</a>
+    </div>
+  </div>
+
+</main>
+
+<!-- Info strip -->
+<div style="background:var(--grey-light);border-top:3px solid var(--black);padding:32px 20px;">
+  <div style="max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:24px;">
+    <div style="text-align:center;">
+      <div style="font-size:32px;margin-bottom:8px;">🕗</div>
+      <div style="font-family:var(--font-hand);font-size:16px;font-weight:700;">Hours</div>
+      <div style="font-family:var(--font-body);font-size:14px;opacity:0.6;line-height:1.6;">Mon – Sun<br>7:00 AM – 9:00 PM</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-size:32px;margin-bottom:8px;">📍</div>
+      <div style="font-family:var(--font-hand);font-size:16px;font-weight:700;">Location</div>
+      <div style="font-family:var(--font-body);font-size:14px;opacity:0.6;line-height:1.6;">Coming soon —<br>stay tuned!</div>
+    </div>
+    <div style="text-align:center;">
+      <div style="font-size:32px;margin-bottom:8px;">📞</div>
+      <div style="font-family:var(--font-hand);font-size:16px;font-weight:700;">Call Us</div>
+      <div style="font-family:var(--font-body);font-size:14px;opacity:0.6;line-height:1.6;">+91 00000 00000</div>
+    </div>
+  </div>
+</div>
+
+<script src="js/main.js"></script>
+<script>
+  // Set min date to today
+  const today = new Date().toISOString().split('T')[0];
+  const dateInput = document.getElementById('rDate');
+  if (dateInput) dateInput.min = today;
+
+  // Show/hide address field
+  document.getElementById('oType').addEventListener('change', function() {
+    const ag = document.getElementById('addressGroup');
+    ag.style.display = this.value.includes('Delivery') ? 'flex' : 'none';
+  });
+
+  function switchTab(tab) {
+    const isReserve = tab === 'reserve';
+    document.getElementById('tabReserve').classList.toggle('active', isReserve);
+    document.getElementById('tabOrder').classList.toggle('active', !isReserve);
+    document.getElementById('formReserve').classList.toggle('active', isReserve);
+    document.getElementById('formOrder').classList.toggle('active', !isReserve);
+    document.getElementById('successMsg').classList.remove('show');
+  }
+
+  function submitReservation() {
+    const name  = document.getElementById('rName').value.trim();
+    const phone = document.getElementById('rPhone').value.trim();
+    const date  = document.getElementById('rDate').value;
+    const time  = document.getElementById('rTime').value;
+    const guests = document.getElementById('rGuests').value;
+
+    if (!name || !phone || !date || !time || !guests) {
+      alert('Please fill in all required fields!');
+      return;
+    }
+
+    document.getElementById('formReserve').classList.remove('active');
+    const msg = document.getElementById('successMsg');
+    document.getElementById('successTitle').textContent = `See you ${date}, ${name}!`;
+    document.getElementById('successText').innerHTML = `
+      Table for ${guests.split('—')[0].trim()} at ${time}.<br>
+      We'll call ${phone} to confirm shortly. ✦
+    `;
+    msg.classList.add('show');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function submitOrder() {
+    const name  = document.getElementById('oName').value.trim();
+    const phone = document.getElementById('oPhone').value.trim();
+    const type  = document.getElementById('oType').value;
+    const items = document.getElementById('oItems').value.trim();
+
+    if (!name || !phone || !type || !items) {
+      alert('Please fill in your name, phone, order type, and what you\'d like!');
+      return;
+    }
+
+    document.getElementById('formOrder').classList.remove('active');
+    const msg = document.getElementById('successMsg');
+    document.getElementById('successTitle').textContent = `Order received, ${name}!`;
+    document.getElementById('successText').innerHTML = `
+      ${type.split('—')[0].trim()} order confirmed.<br>
+      We'll call ${phone} to confirm details. ✦
+    `;
+    msg.classList.add('show');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+</body>
+</html>

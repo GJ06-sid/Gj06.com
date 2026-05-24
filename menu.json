@@ -1,0 +1,50 @@
+{
+  "categories": [
+    {
+      "id": "hot-drinks",
+      "name": "Hot Drinks",
+      "icon": "☕",
+      "items": [
+        { "id": "hd1", "name": "Classic Chai", "desc": "The OG. Slow-brewed spiced tea with fresh ginger & cardamom.", "price": 180, "tag": "bestseller" },
+        { "id": "hd2", "name": "Masala Chai", "desc": "Extra spice, extra soul. Our masala blend in every sip.", "price": 200, "tag": "" },
+        { "id": "hd3", "name": "Karak Chai", "desc": "Bold, thick, and unapologetically strong. Not for the faint of heart.", "price": 220, "tag": "spicy" },
+        { "id": "hd4", "name": "Filter Coffee", "desc": "South Indian-style drip coffee. Dark, deep, and comforting.", "price": 160, "tag": "" },
+        { "id": "hd5", "name": "Rose Chai", "desc": "Fragrant rose petals steeped with our classic chai blend.", "price": 210, "tag": "new" }
+      ]
+    },
+    {
+      "id": "cold-drinks",
+      "name": "Cold Sips",
+      "icon": "🧋",
+      "items": [
+        { "id": "cd1", "name": "Iced Masala Chai", "desc": "All the fire, served ice cold. Shaken, not stirred.", "price": 240, "tag": "bestseller" },
+        { "id": "cd2", "name": "Chai Lemonade", "desc": "Our chai meets fresh lemon. Weird? Yes. Magical? Absolutely.", "price": 220, "tag": "new" },
+        { "id": "cd3", "name": "Cold Brew Chai", "desc": "12-hour cold steep. Smooth, mellow, mysterious.", "price": 260, "tag": "" },
+        { "id": "cd4", "name": "Mango Lassi", "desc": "Sun-ripe Alphonso mangoes blended with creamy yoghurt.", "price": 200, "tag": "" }
+      ]
+    },
+    {
+      "id": "breads",
+      "name": "From the Bakehouse",
+      "icon": "🍞",
+      "items": [
+        { "id": "br1", "name": "Butter Toast", "desc": "Thick-sliced sourdough, hand-churned butter, a pinch of sea salt.", "price": 120, "tag": "bestseller" },
+        { "id": "br2", "name": "Masala Toast", "desc": "Chutney, veggies, and spices baked into every slice.", "price": 160, "tag": "" },
+        { "id": "br3", "name": "Jam & Cream Toast", "desc": "House-made seasonal jam with whipped cream. Simple joy.", "price": 150, "tag": "" },
+        { "id": "br4", "name": "Garlic Herb Focaccia", "desc": "Olive oil, roasted garlic, and rosemary on a cloud of dough.", "price": 180, "tag": "new" },
+        { "id": "br5", "name": "Banana Bread", "desc": "Dense, moist, slightly caramelised. Baked fresh every morning.", "price": 140, "tag": "" }
+      ]
+    },
+    {
+      "id": "bites",
+      "name": "Lil Bites",
+      "icon": "✨",
+      "items": [
+        { "id": "bi1", "name": "Chai Cookies", "desc": "Spiced chai infused into a buttery, crumbly cookie. Dangerous.", "price": 80, "tag": "bestseller" },
+        { "id": "bi2", "name": "Cardamom Brownie", "desc": "Fudgy chocolate brownie with a cardamom surprise in the centre.", "price": 120, "tag": "" },
+        { "id": "bi3", "name": "Sesame Ladoo", "desc": "Hand-rolled, lightly sweetened sesame balls. Grandma-approved.", "price": 60, "tag": "" },
+        { "id": "bi4", "name": "Cheese Puff", "desc": "Flaky, golden, stuffed with seasoned cottage cheese.", "price": 100, "tag": "new" }
+      ]
+    }
+  ]
+}
