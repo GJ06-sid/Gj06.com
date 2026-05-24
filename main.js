@@ -4,98 +4,82 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
-  // ---- Custom Cursor ----
+  // ---- Custom Cursor (mouse/trackpad only) ----
   const cursor = document.querySelector('.cursor');
-  if (cursor && window.matchMedia('(pointer: fine)').matches) {
-    document.addEventListener('mousemove', e => {
-      cursor.style.left = e.clientX + 'px';
-      cursor.style.top  = e.clientY + 'px';
-    });
-    document.addEventListener('mousedown', () => cursor.classList.add('clicking'));
-    document.addEventListener('mouseup',   () => cursor.classList.remove('clicking'));
-  } else if (cursor) {
-    cursor.style.display = 'none';
-    document.body.style.cursor = 'auto';
-    document.querySelectorAll('button, a').forEach(el => el.style.cursor = 'pointer');
+  if (cursor) {
+    if (window.matchMedia('(pointer: fine)').matches) {
+      document.addEventListener('mousemove', e => {
+        cursor.style.left = e.clientX + 'px';
+        cursor.style.top  = e.clientY + 'px';
+      });
+      document.addEventListener('mousedown', () => cursor.classList.add('clicking'));
+      document.addEventListener('mouseup',   () => cursor.classList.remove('clicking'));
+    }
+    // On touch devices the cursor div is hidden via CSS (display:none at @media pointer:coarse)
+    // No JS manipulation needed — CSS handles it cleanly
   }
 
-  // ---- Chai Loader ----
+  // ---- Chai Loader (index.html only) ----
   const loader = document.getElementById('loader');
   if (loader) {
-    // Hide loader after animation completes
-    const hideLoader = () => {
+    setTimeout(() => {
       loader.classList.add('hidden');
       document.body.classList.remove('loading');
-    };
-    // Total animation duration ~3.2s
-    setTimeout(hideLoader, 3400);
+    }, 3400);
   }
 
   // ---- Hamburger Nav ----
-  const hamburger = document.getElementById('hamburger');
+  const hamburger  = document.getElementById('hamburger');
   const navOverlay = document.getElementById('navOverlay');
   const navClose   = document.getElementById('navClose');
 
   if (hamburger && navOverlay) {
-    hamburger.addEventListener('click', () => {
+    const openNav = () => {
       navOverlay.classList.add('open');
       hamburger.setAttribute('aria-expanded', 'true');
       document.body.style.overflow = 'hidden';
-    });
-
+    };
     const closeNav = () => {
       navOverlay.classList.remove('open');
       hamburger.setAttribute('aria-expanded', 'false');
       document.body.style.overflow = '';
     };
 
+    hamburger.addEventListener('click', openNav);
     if (navClose) navClose.addEventListener('click', closeNav);
-
-    navOverlay.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', closeNav);
-    });
-
-    // Close on escape
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') closeNav();
-    });
+    navOverlay.querySelectorAll('a').forEach(link => link.addEventListener('click', closeNav));
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeNav(); });
   }
 
-  // ---- Sticky Navbar ----
+  // ---- Sticky Navbar shadow ----
   const navbar = document.getElementById('navbar');
   if (navbar) {
-    window.addEventListener('scroll', () => {
-      if (window.scrollY > 60) {
-        navbar.classList.add('scrolled');
-      } else {
-        navbar.classList.remove('scrolled');
-      }
-    }, { passive: true });
+    const onScroll = () => navbar.classList.toggle('scrolled', window.scrollY > 60);
+    window.addEventListener('scroll', onScroll, { passive: true });
   }
 
-  // ---- Scroll Reveal (IntersectionObserver) ----
+  // ---- Scroll Reveal ----
   const revealEls = document.querySelectorAll('.reveal');
   if (revealEls.length) {
-    const revealObserver = new IntersectionObserver((entries) => {
+    const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => {
         if (entry.isIntersecting) {
           entry.target.classList.add('visible');
-          revealObserver.unobserve(entry.target);
+          observer.unobserve(entry.target);
         }
       });
-    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
-
-    revealEls.forEach(el => revealObserver.observe(el));
+    }, { threshold: 0.1, rootMargin: '0px 0px -32px 0px' });
+    revealEls.forEach(el => observer.observe(el));
   }
 
-  // ---- Page Transitions ----
+  // ---- Page Transitions (internal links only) ----
+  // FIX: Don't run transition on index.html while loader is active
   const pageTransition = document.querySelector('.page-transition');
   if (pageTransition) {
-    // Animate out on load
+    // Slide out on page load
     pageTransition.classList.add('exit');
-    setTimeout(() => pageTransition.style.display = 'none', 500);
+    setTimeout(() => pageTransition.classList.remove('exit'), 450);
 
-    // Animate in on link click (same-origin links only)
     document.querySelectorAll('a[href]').forEach(link => {
       const href = link.getAttribute('href');
       if (
@@ -106,30 +90,33 @@ document.addEventListener('DOMContentLoaded', () => {
         !href.startsWith('tel')
       ) {
         link.addEventListener('click', e => {
+          // Don't intercept if loader is still visible
+          if (document.getElementById('loader') && !document.getElementById('loader').classList.contains('hidden')) return;
           e.preventDefault();
-          pageTransition.style.display = 'block';
-          pageTransition.classList.remove('exit');
           pageTransition.classList.add('enter');
-          setTimeout(() => { window.location.href = href; }, 420);
+          setTimeout(() => { window.location.href = href; }, 430);
         });
       }
     });
   }
 
-  // ---- Marquee duplicate for seamless loop ----
+  // ---- Marquee — FIX: only duplicate once, guard against double-run ----
   const marqueeInner = document.querySelector('.marquee-inner');
-  if (marqueeInner) {
+  if (marqueeInner && !marqueeInner.dataset.cloned) {
+    marqueeInner.dataset.cloned = 'true';
     const clone = marqueeInner.cloneNode(true);
+    clone.setAttribute('aria-hidden', 'true');
     marqueeInner.parentElement.appendChild(clone);
   }
 
   // ---- Smooth anchor scroll ----
   document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', e => {
-      const target = document.querySelector(anchor.getAttribute('href'));
+      const id = anchor.getAttribute('href');
+      const target = document.querySelector(id);
       if (target) {
         e.preventDefault();
-        const navH = document.getElementById('navbar')?.offsetHeight || 64;
+        const navH = navbar ? navbar.offsetHeight : 64;
         const top  = target.getBoundingClientRect().top + window.scrollY - navH;
         window.scrollTo({ top, behavior: 'smooth' });
       }

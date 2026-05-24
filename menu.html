@@ -3,22 +3,186 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
-  <meta name="description" content="GJ 06 Menu — Hand-brewed chai, fresh-baked breads, and magical bites." />
+  <meta name="description" content="GJ 06 Menu — Chai, Coffee, Indian Street Food, Pizza, Burgers, Sweet Goodies and more. Based in Sydney." />
   <title>Menu — GJ 06</title>
   <link rel="stylesheet" href="css/main.css" />
   <link rel="stylesheet" href="css/animations.css" />
+  <style>
+    .cat-tabs-wrap {
+      position: sticky;
+      top: var(--nav-h);
+      z-index: 300;
+      background: white;
+      border-bottom: 2.5px solid var(--black);
+    }
+    .cat-tabs-scroll {
+      display: flex;
+      overflow-x: auto;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      padding: 0 4px;
+    }
+    .cat-tabs-scroll::-webkit-scrollbar { display: none; }
+
+    .cat-tab {
+      font-family: var(--font-display);
+      font-size: 17px;
+      letter-spacing: 0.04em;
+      padding: 14px 16px;
+      border: none;
+      background: none;
+      border-bottom: 4px solid transparent;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+      flex-shrink: 0;
+      color: var(--black);
+    }
+    .cat-tab:hover { background: var(--grey-light); }
+    .cat-tab.active {
+      border-bottom-color: var(--black);
+      font-weight: 700;
+    }
+
+    .menu-section { display: none; }
+    .menu-section.active { display: block; }
+
+    .item-card {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 16px;
+      padding: 18px 20px;
+      border-bottom: 2px solid var(--grey-mid);
+      transition: background 0.15s;
+      cursor: pointer;
+    }
+    .item-card:last-child { border-bottom: none; }
+    .item-card:active { background: var(--grey-light); }
+
+    .item-name {
+      font-family: var(--font-display);
+      font-size: clamp(18px, 4vw, 22px);
+      letter-spacing: 0.02em;
+      margin-bottom: 4px;
+    }
+    .item-desc {
+      font-family: var(--font-body);
+      font-size: 13px;
+      line-height: 1.6;
+      color: var(--grey-dark);
+      max-width: 480px;
+    }
+    .item-price {
+      font-family: var(--font-hand);
+      font-size: 20px;
+      font-weight: 700;
+      flex-shrink: 0;
+      padding-top: 2px;
+    }
+    .item-tag {
+      display: inline-block;
+      padding: 2px 8px;
+      font-family: var(--font-hand);
+      font-size: 11px;
+      font-weight: 700;
+      border-radius: 20px;
+      margin-bottom: 4px;
+      letter-spacing: 0.04em;
+    }
+    .tag-bestseller { background: var(--black); color: white; }
+    .tag-new { background: white; color: var(--black); border: 1.5px solid var(--black); }
+    .tag-spicy { background: var(--black); color: white; }
+
+    .add-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      border: 2.5px solid var(--black);
+      border-radius: var(--radius-sketch);
+      background: var(--black);
+      color: white;
+      font-size: 22px;
+      font-family: var(--font-hand);
+      flex-shrink: 0;
+      margin-top: 2px;
+      transition: transform 0.15s;
+    }
+    .add-btn:active { transform: scale(0.9); }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 24px 20px 12px;
+      border-bottom: 3px solid var(--black);
+    }
+    .section-header-icon { font-size: 28px; }
+    .section-header-title {
+      font-family: var(--font-display);
+      font-size: clamp(24px, 6vw, 36px);
+      letter-spacing: 0.03em;
+    }
+    .section-header-sub {
+      font-family: var(--font-hand);
+      font-size: 13px;
+      color: var(--grey-dark);
+      margin-top: 2px;
+    }
+
+    /* Cart drawer */
+    #cartDrawer {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 600;
+      background: var(--black);
+      color: white;
+      padding: 16px 20px;
+      transform: translateY(100%);
+      transition: transform 0.3s ease;
+      border-top: 3px solid white;
+      border-radius: 20px 20px 0 0;
+    }
+    #cartDrawer.show { transform: translateY(0); }
+    #cartItems { max-height: 40vh; overflow-y: auto; margin: 12px 0; }
+    .cart-item-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.15);
+      font-family: var(--font-hand);
+      font-size: 16px;
+    }
+    .cart-qty-ctrl {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .cart-qty-btn {
+      width: 28px; height: 28px;
+      border: 2px solid white;
+      border-radius: 50%;
+      background: none;
+      color: white;
+      font-size: 18px;
+      line-height: 1;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer;
+    }
+  </style>
 </head>
 <body>
 
 <div class="page-transition"></div>
-
-<!-- Custom cursor -->
 <div class="cursor" aria-hidden="true">
   <svg viewBox="0 0 36 36" fill="none">
     <rect x="8" y="16" width="20" height="14" rx="2" fill="#0a0a0a"/>
     <path d="M28 20 Q34 20 34 25 Q34 30 28 30" stroke="#0a0a0a" stroke-width="2.5" fill="none"/>
-    <path d="M14 14 Q13 10 14 7 Q15 4 14 1" stroke="#0a0a0a" stroke-width="2" fill="none" stroke-linecap="round" class="steam-line"/>
-    <path d="M20 14 Q19 10 20 7 Q21 4 20 1" stroke="#0a0a0a" stroke-width="2" fill="none" stroke-linecap="round" class="steam-line"/>
+    <path d="M14 14 Q13 10 14 7" stroke="#0a0a0a" stroke-width="2" fill="none" stroke-linecap="round" class="steam-line"/>
+    <path d="M20 14 Q19 10 20 7" stroke="#0a0a0a" stroke-width="2" fill="none" stroke-linecap="round" class="steam-line"/>
     <ellipse cx="18" cy="30" rx="13" ry="3" fill="#0a0a0a"/>
   </svg>
 </div>
@@ -34,7 +198,7 @@
     <a href="reserve.html">Reserve</a>
   </nav>
   <div class="menu-social">
-    <a href="https://instagram.com" target="_blank" rel="noopener">
+    <a href="https://instagram.com" target="_blank" rel="noopener" aria-label="Instagram">
       <svg width="28" height="28" viewBox="0 0 24 24" fill="white"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
     </a>
   </div>
@@ -46,62 +210,236 @@
     <img src="assets/logo.png" alt="GJ 06" style="height:42px;width:auto;" onerror="this.style.display='none'">
     <span style="font-family:var(--font-display);font-size:26px;letter-spacing:0.05em;">GJ 06</span>
   </a>
-  <button id="hamburger" aria-label="Open menu" aria-expanded="false" style="background:none;border:3px solid var(--black);border-radius:var(--radius-sketch);width:48px;height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px;">
-    <span style="display:block;width:22px;height:2.5px;background:var(--black);border-radius:2px;"></span>
-    <span style="display:block;width:16px;height:2.5px;background:var(--black);border-radius:2px;align-self:flex-start;"></span>
-    <span style="display:block;width:22px;height:2.5px;background:var(--black);border-radius:2px;"></span>
-  </button>
+  <div style="display:flex;align-items:center;gap:10px;">
+    <button id="cartToggle" style="display:none;font-family:var(--font-hand);font-size:15px;font-weight:700;padding:8px 14px;border:3px solid var(--black);border-radius:var(--radius-sketch);background:var(--black);color:white;">🧺 <span id="cartCount">0</span></button>
+    <button id="hamburger" aria-label="Open menu" aria-expanded="false" style="background:none;border:3px solid var(--black);border-radius:var(--radius-sketch);width:48px;height:48px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:10px;">
+      <span style="display:block;width:22px;height:2.5px;background:var(--black);border-radius:2px;"></span>
+      <span style="display:block;width:16px;height:2.5px;background:var(--black);border-radius:2px;align-self:flex-start;"></span>
+      <span style="display:block;width:22px;height:2.5px;background:var(--black);border-radius:2px;"></span>
+    </button>
+  </div>
 </header>
 <style>#navbar.scrolled{box-shadow:0 4px 0 var(--black);}</style>
 
-<!-- Page Header -->
-<section style="padding-top:calc(var(--nav-h) + 48px);padding-bottom:40px;padding-left:20px;padding-right:20px;background:var(--black);text-align:center;position:relative;overflow:hidden;">
-  <div style="position:absolute;inset:0;background-image:radial-gradient(circle,#333 1px,transparent 1px);background-size:24px 24px;opacity:0.4;"></div>
-  <div style="position:relative;z-index:2;">
-    <div style="font-family:var(--font-hand);font-size:18px;color:white;opacity:0.5;margin-bottom:8px;">— everything we make —</div>
-    <h1 class="display-xl" style="color:white;">MENU</h1>
-    <p style="font-family:var(--font-hand);font-size:18px;color:white;opacity:0.7;margin-top:12px;">Fresh. Flat. Flavourful.</p>
-  </div>
-</section>
+<!-- Hero food photos strip -->
+<div style="padding-top:var(--nav-h);background:var(--black);display:flex;overflow:hidden;height:220px;">
+  <img src="assets/food1.png" alt="Vadapav" style="width:50%;object-fit:cover;object-position:center;filter:grayscale(20%);">
+  <img src="assets/food2.png" alt="Signature Burger" style="width:50%;object-fit:cover;object-position:center;filter:grayscale(20%);">
+</div>
 
-<!-- Wavy divider -->
+<!-- Page title -->
+<div style="background:var(--black);padding:24px 20px 32px;text-align:center;">
+  <div style="font-family:var(--font-hand);font-size:16px;color:white;opacity:0.5;margin-bottom:6px;">— freshly made, simply the best —</div>
+  <h1 style="font-family:var(--font-display);font-size:clamp(60px,16vw,120px);color:white;line-height:0.9;letter-spacing:0.02em;">MENU</h1>
+</div>
 <div style="background:var(--black);line-height:0;">
-  <svg viewBox="0 0 1440 40" preserveAspectRatio="none" style="display:block;width:100%;">
-    <path d="M0,20 Q180,0 360,20 Q540,40 720,20 Q900,0 1080,20 Q1260,40 1440,20 L1440,40 L0,40 Z" fill="white"/>
+  <svg viewBox="0 0 1440 32" preserveAspectRatio="none" style="display:block;width:100%;">
+    <path d="M0,16 Q180,0 360,16 Q540,32 720,16 Q900,0 1080,16 Q1260,32 1440,16 L1440,32 L0,32 Z" fill="white"/>
   </svg>
 </div>
 
 <!-- Category Tabs -->
-<div style="position:sticky;top:var(--nav-h);z-index:300;background:white;border-bottom:2.5px solid var(--black);overflow-x:auto;scrollbar-width:none;">
-  <div style="display:flex;min-width:max-content;padding:0 12px;">
-    <button class="cat-tab active" data-cat="all" style="font-family:var(--font-display);font-size:18px;letter-spacing:0.05em;padding:14px 20px;border:none;background:none;border-bottom:4px solid transparent;cursor:pointer;white-space:nowrap;transition:all 0.2s;">ALL</button>
-    <button class="cat-tab" data-cat="hot-drinks" style="font-family:var(--font-display);font-size:18px;letter-spacing:0.05em;padding:14px 20px;border:none;background:none;border-bottom:4px solid transparent;cursor:pointer;white-space:nowrap;transition:all 0.2s;">☕ HOT DRINKS</button>
-    <button class="cat-tab" data-cat="cold-drinks" style="font-family:var(--font-display);font-size:18px;letter-spacing:0.05em;padding:14px 20px;border:none;background:none;border-bottom:4px solid transparent;cursor:pointer;white-space:nowrap;transition:all 0.2s;">🧋 COLD SIPS</button>
-    <button class="cat-tab" data-cat="breads" style="font-family:var(--font-display);font-size:18px;letter-spacing:0.05em;padding:14px 20px;border:none;background:none;border-bottom:4px solid transparent;cursor:pointer;white-space:nowrap;transition:all 0.2s;">🍞 BAKEHOUSE</button>
-    <button class="cat-tab" data-cat="bites" style="font-family:var(--font-display);font-size:18px;letter-spacing:0.05em;padding:14px 20px;border:none;background:none;border-bottom:4px solid transparent;cursor:pointer;white-space:nowrap;transition:all 0.2s;">✨ LIL BITES</button>
+<div class="cat-tabs-wrap">
+  <div class="cat-tabs-scroll" id="catTabsScroll">
+    <button class="cat-tab active" data-cat="chai">🫖 Chai</button>
+    <button class="cat-tab" data-cat="coffee">☕ Coffee</button>
+    <button class="cat-tab" data-cat="cold-brew">🧊 Cold Brew</button>
+    <button class="cat-tab" data-cat="english-tea">🍃 English Tea</button>
+    <button class="cat-tab" data-cat="thickshakes">🥤 Shakes</button>
+    <button class="cat-tab" data-cat="mocktails">🍹 Mocktails</button>
+    <button class="cat-tab" data-cat="juices">🍊 Juices</button>
+    <button class="cat-tab" data-cat="street">🌶️ Street Style</button>
+    <button class="cat-tab" data-cat="snacks">🥐 Snacks</button>
+    <button class="cat-tab" data-cat="pizza-burger">🍕 Pizza & Burger</button>
+    <button class="cat-tab" data-cat="sweets">🍰 Sweets</button>
+    <button class="cat-tab" data-cat="combos">🤝 Combos</button>
+    <button class="cat-tab" data-cat="kids">🧒 For Kids</button>
+    <button class="cat-tab" data-cat="addons">➕ Add-Ons</button>
   </div>
 </div>
 
-<style>
-  .cat-tab.active { border-bottom-color: var(--black) !important; }
-  .cat-tab:hover { background: var(--grey-light); }
-</style>
-
-<!-- Menu Content -->
-<main style="padding:40px 20px 120px;max-width:960px;margin:0 auto;" id="menuContent">
+<!-- Menu Sections -->
+<main id="menuMain" style="max-width:780px;margin:0 auto;padding-bottom:140px;">
   <!-- Populated by JS -->
-  <div style="text-align:center;padding:60px 20px;font-family:var(--font-hand);font-size:20px;opacity:0.4;" id="menuLoading">
-    Brewing the menu... ☕
-  </div>
+  <div id="menuLoading" style="text-align:center;padding:80px 20px;font-family:var(--font-hand);font-size:20px;opacity:0.4;">Brewing the menu... 🫖</div>
 </main>
 
-<!-- Mobile Order Bar -->
+<!-- Cart Drawer -->
+<div id="cartDrawer">
+  <div style="display:flex;justify-content:space-between;align-items:center;">
+    <div style="font-family:var(--font-display);font-size:24px;letter-spacing:0.05em;">YOUR ORDER</div>
+    <button onclick="toggleCart()" style="background:none;border:none;color:white;font-size:28px;font-family:'Caveat',cursive;">✕</button>
+  </div>
+  <div id="cartItems"></div>
+  <div style="display:flex;justify-content:space-between;align-items:center;padding-top:12px;border-top:2px solid rgba(255,255,255,0.2);margin-top:4px;">
+    <div>
+      <div style="font-family:var(--font-hand);font-size:14px;opacity:0.6;">Total</div>
+      <div style="font-family:var(--font-display);font-size:28px;" id="cartTotal">$0.00</div>
+    </div>
+    <a href="reserve.html" style="font-family:var(--font-display);font-size:18px;letter-spacing:0.05em;padding:14px 24px;background:white;color:var(--black);border:3px solid white;border-radius:var(--radius-sketch);">Checkout →</a>
+  </div>
+</div>
+
+<!-- Mobile bottom bar -->
 <div class="mobile-order-bar">
-  <a href="reserve.html" class="btn" style="background:white;color:var(--black);border-color:white;font-size:16px;">Reserve Table</a>
-  <a href="#menuContent" class="btn btn-outline" style="border-color:white;color:white;font-size:16px;">↑ Top</a>
+  <button id="mobileCartBtn" onclick="toggleCart()" style="flex:1;font-family:var(--font-display);font-size:17px;letter-spacing:0.05em;padding:12px;background:white;color:var(--black);border:3px solid white;border-radius:var(--radius-sketch);display:none;">🧺 View Order (<span id="mobileCartCount">0</span>)</button>
+  <a href="reserve.html" style="flex:1;font-family:var(--font-display);font-size:17px;letter-spacing:0.05em;padding:12px;background:transparent;color:white;border:3px solid white;border-radius:var(--radius-sketch);text-align:center;">Reserve Table</a>
 </div>
 
 <script src="js/main.js"></script>
-<script src="js/menu.js"></script>
+<script>
+  let menuData = null;
+  let cart = [];
+  let activeCategory = 'chai';
+
+  async function loadMenu() {
+    try {
+      const res = await fetch('data/menu.json');
+      menuData = await res.json();
+      renderCategory(activeCategory);
+      document.getElementById('menuLoading').style.display = 'none';
+    } catch(e) {
+      document.getElementById('menuLoading').textContent = 'Could not load menu. Please refresh.';
+    }
+  }
+
+  function renderCategory(catId) {
+    const main = document.getElementById('menuMain');
+    main.innerHTML = '';
+
+    const cat = menuData.categories.find(c => c.id === catId);
+    if (!cat) return;
+
+    const section = document.createElement('div');
+
+    // Section header
+    const header = document.createElement('div');
+    header.className = 'section-header';
+    header.innerHTML = `
+      <span class="section-header-icon">${cat.icon}</span>
+      <div>
+        <div class="section-header-title">${cat.name}</div>
+        ${cat.subtitle ? `<div class="section-header-sub">${cat.subtitle}</div>` : ''}
+      </div>
+    `;
+    section.appendChild(header);
+
+    // Items
+    const list = document.createElement('div');
+    list.style.cssText = 'border:3px solid var(--black);border-top:none;border-radius:0 0 var(--radius-sketch) var(--radius-sketch);overflow:hidden;margin:0 20px 32px;';
+
+    cat.items.forEach(item => {
+      const card = document.createElement('div');
+      card.className = 'item-card';
+
+      const tagMap = { bestseller:'tag-bestseller', new:'tag-new', spicy:'tag-spicy' };
+      const tagHtml = item.tag ? `<span class="item-tag ${tagMap[item.tag] || ''}">${item.tag === 'bestseller' ? '★ Bestseller' : item.tag === 'new' ? '✦ New' : '🌶 Spicy'}</span><br>` : '';
+
+      card.innerHTML = `
+        <div style="flex:1;">
+          ${tagHtml}
+          <div class="item-name">${item.name}</div>
+          ${item.desc ? `<div class="item-desc">${item.desc}</div>` : ''}
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;">
+          <div class="item-price">$${Number(item.price).toFixed(2).replace('.00','')}</div>
+          <button class="add-btn" onclick="addToCart('${item.id}','${item.name.replace(/'/g,"\\'")}',${item.price})" aria-label="Add ${item.name}">+</button>
+        </div>
+      `;
+      list.appendChild(card);
+    });
+
+    section.appendChild(list);
+    main.appendChild(section);
+  }
+
+  // Tab switching
+  document.querySelectorAll('.cat-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      activeCategory = tab.dataset.cat;
+      if (menuData) renderCategory(activeCategory);
+      // Scroll tab into view
+      tab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      // Scroll page to menu
+      const navH = document.getElementById('navbar').offsetHeight;
+      const tabsH = document.querySelector('.cat-tabs-wrap').offsetHeight;
+      window.scrollTo({ top: navH + tabsH - 10, behavior: 'smooth' });
+    });
+  });
+
+  // Cart
+  function addToCart(id, name, price) {
+    const existing = cart.find(i => i.id === id);
+    if (existing) existing.qty++;
+    else cart.push({ id, name, price: Number(price), qty: 1 });
+    updateCartUI();
+    showToast(`Added ${name}!`);
+  }
+
+  function changeQty(id, delta) {
+    const item = cart.find(i => i.id === id);
+    if (!item) return;
+    item.qty += delta;
+    if (item.qty <= 0) cart = cart.filter(i => i.id !== id);
+    updateCartUI();
+  }
+
+  function updateCartUI() {
+    const total = cart.reduce((s, i) => s + i.qty, 0);
+    const sum   = cart.reduce((s, i) => s + i.qty * i.price, 0);
+
+    // Cart count badges
+    document.getElementById('cartCount').textContent = total;
+    document.getElementById('mobileCartCount').textContent = total;
+    document.getElementById('cartTotal').textContent = '$' + sum.toFixed(2);
+
+    // Show/hide cart buttons
+    const cartToggle = document.getElementById('cartToggle');
+    const mobileBtn  = document.getElementById('mobileCartBtn');
+    if (total > 0) {
+      cartToggle.style.display = 'flex';
+      mobileBtn.style.display = 'flex';
+    } else {
+      cartToggle.style.display = 'none';
+      mobileBtn.style.display = 'none';
+    }
+
+    // Render cart items
+    const cartItems = document.getElementById('cartItems');
+    if (!cart.length) {
+      cartItems.innerHTML = '<div style="font-family:var(--font-hand);opacity:0.5;padding:16px 0;">No items yet — go add some magic!</div>';
+      return;
+    }
+    cartItems.innerHTML = cart.map(i => `
+      <div class="cart-item-row">
+        <span style="flex:1;">${i.name}</span>
+        <div class="cart-qty-ctrl">
+          <button class="cart-qty-btn" onclick="changeQty('${i.id}',-1)">−</button>
+          <span>${i.qty}</span>
+          <button class="cart-qty-btn" onclick="changeQty('${i.id}',1)">+</button>
+        </div>
+        <span style="min-width:52px;text-align:right;">$${(i.qty * i.price).toFixed(2)}</span>
+      </div>
+    `).join('');
+  }
+
+  function toggleCart() {
+    document.getElementById('cartDrawer').classList.toggle('show');
+  }
+  document.getElementById('cartToggle').addEventListener('click', toggleCart);
+
+  function showToast(msg) {
+    const t = document.createElement('div');
+    t.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%);background:var(--black);color:white;font-family:var(--font-hand);font-size:15px;padding:10px 20px;border-radius:var(--radius-sketch);z-index:9999;pointer-events:none;transition:opacity 0.4s;white-space:nowrap;';
+    t.textContent = msg;
+    document.body.appendChild(t);
+    setTimeout(() => { t.style.opacity = '0'; }, 1400);
+    setTimeout(() => t.remove(), 1900);
+  }
+
+  loadMenu();
+</script>
 </body>
 </html>

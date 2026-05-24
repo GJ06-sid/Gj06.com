@@ -21,31 +21,28 @@
   pointer-events: none;
 }
 
-/* ---- Chai Glass SVG container ---- */
 .chai-glass-wrap {
   position: relative;
   width: 120px;
   height: 200px;
 }
 
-/* ---- Glass outline draws itself ---- */
+/* Glass outline draws itself */
 .glass-outline {
   stroke-dasharray: 800;
   stroke-dashoffset: 800;
   animation: drawGlass 0.8s ease forwards 0.2s;
 }
-
 @keyframes drawGlass {
   to { stroke-dashoffset: 0; }
 }
 
-/* ---- Chai fill rises ---- */
+/* Chai fill rises — FIX: transform-origin must be set on the element, not inside keyframes */
 .chai-fill {
-  transform-origin: bottom center;
+  transform-origin: center bottom;
   transform: scaleY(0);
   animation: fillChai 1.4s cubic-bezier(0.4, 0, 0.2, 1) forwards 1s;
 }
-
 @keyframes fillChai {
   0%   { transform: scaleY(0); }
   60%  { transform: scaleY(0.85); }
@@ -53,33 +50,30 @@
   100% { transform: scaleY(1); }
 }
 
-/* ---- Froth/foam on top ---- */
+/* Froth */
 .chai-froth {
   opacity: 0;
-  animation: showFroth 0.4s ease forwards 2.2s;
+  animation: fadeInElement 0.4s ease forwards 2.2s;
 }
-@keyframes showFroth {
+
+/* FIX: was referencing missing 'showSteam' — now uses correct keyframe name */
+.chai-steam {
+  opacity: 0;
+  animation: fadeInElement 0.4s ease forwards 2.4s;
+}
+
+@keyframes fadeInElement {
   to { opacity: 1; }
 }
 
-/* ---- Steam rises from chai ---- */
-.chai-steam {
-  opacity: 0;
-  animation: showSteam 0.3s ease forwards 2.4s;
-}
-
-/* ---- Loader text ---- */
+/* Loader text */
 .loader-brand {
   font-family: var(--font-display);
   font-size: clamp(52px, 14vw, 80px);
   letter-spacing: 0.05em;
   color: var(--black);
   opacity: 0;
-  animation: fadeInBrand 0.6s ease forwards 2s;
-}
-
-@keyframes fadeInBrand {
-  to { opacity: 1; }
+  animation: fadeInElement 0.6s ease forwards 2s;
 }
 
 .loader-tagline {
@@ -89,17 +83,16 @@
   letter-spacing: 0.03em;
   text-align: center;
   opacity: 0;
-  animation: fadeInBrand 0.6s ease forwards 2.3s;
+  animation: fadeInElement 0.6s ease forwards 2.3s;
 }
 
-/* ---- Loader dots ---- */
+/* Loader dots */
 .loader-dots {
   display: flex;
   gap: 8px;
   opacity: 0;
-  animation: fadeInBrand 0.4s ease forwards 2.6s;
+  animation: fadeInElement 0.4s ease forwards 2.6s;
 }
-
 .loader-dots span {
   width: 8px;
   height: 8px;
@@ -113,10 +106,4 @@
 @keyframes dotBounce {
   0%, 100% { transform: translateY(0); }
   50% { transform: translateY(-8px); }
-}
-
-/* ---- Whole loader exit ---- */
-@keyframes loaderExit {
-  0% { opacity: 1; transform: scale(1); }
-  100% { opacity: 0; transform: scale(1.03); }
 }
